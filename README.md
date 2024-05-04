@@ -1,3 +1,5 @@
+This is a simple backup of my configs for the Guix System.  As I learn more about Guix, this will change and probably become closer to ideal.  Right now it is just an experiment, as I worked with NixOS prior.
+
 **apply-globalconfig.sh**- applies the standard global configuration apply command
 
 **apply-homeconfig.sh** - applies the guix home reconfigure command (useful when you make adjustments to it)
