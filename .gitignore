@@ -1,2 +1,4 @@
-.bashrc
-.bash_profile
+guix/shell-authorized-directories
+guix/current/
+home/.bashrc
+home/.bash_profile
