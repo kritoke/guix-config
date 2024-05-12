@@ -11,10 +11,27 @@
 ;; used in this configuration.
 
 (use-modules (gnu)
-	     (nongnu packages linux)
-	     (nongnu system linux-initrd))
+      (guix channels)
+	    (nongnu packages linux)
+	    (nongnu system linux-initrd))
+
+;;needed for non-guix channel adding
+(use-package-modules package-management)
 
 (use-service-modules cups desktop networking ssh xorg)
+
+;; Add Unofficial Channels
+(define my-channels
+  (cons* (channel 
+            (name 'nonguix)
+            (url "https://gitlab.com/nonguix/nonguix")
+            (branch "master")
+            (introduction
+              (make-channel-introduction
+                "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                (openpgp-fingerprint
+                  "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+            %default-channels))
 
 (operating-system
   (kernel linux)
@@ -48,24 +65,30 @@
  (services
    (append (list (service gnome-desktop-service-type)
 
-                 ;; To configure OpenSSH, pass an 'openssh-configuration'
-                 ;; record as a second argument to 'service' below.
-                 (service openssh-service-type)
-                 (service cups-service-type)
-                 (set-xorg-configuration
-                  (xorg-configuration (keyboard-layout keyboard-layout))))
+            ;; To configure OpenSSH, pass an 'openssh-configuration'
+            ;; record as a second argument to 'service' below.
+            (service openssh-service-type)
+            (service cups-service-type)
+            (set-xorg-configuration
+            (xorg-configuration (keyboard-layout keyboard-layout))))
 
-                (modify-services %desktop-services
-                (guix-service-type config => 
-                      (guix-configuration
-                        (inherit config)
-                        (substitute-urls
-                       (append '("https://substitutes.nonguix.org")
-                            %default-substitute-urls
-                            '("https://bordeaux-us-east-mirror.cbaines.net/")))
-                        (authorized-keys
-              (append (list (local-file "guix/substitutes.nonguix.org.pub"))
-                           %default-authorized-guix-keys)))))))
+    (modify-services %desktop-services
+      (guix-service-type
+        config => (guix-configuration
+                    (inherit config)
+                    ;; add nonguix repo to default system config
+                    (channels my-channels)
+                    (guix (guix-for-channels my-channels))
+                    ;; Add binary repo for nonguix
+                    (substitute-urls
+                    (append '("https://substitutes.nonguix.org")
+                      %default-substitute-urls
+                      '("https://bordeaux-us-east-mirror.cbaines.net/")))
+                    (authorized-keys
+                      (append (list (local-file "guix/substitutes.nonguix.org.pub"))
+                        %default-authorized-guix-keys))
+                  )))))
+
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
