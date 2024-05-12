@@ -100,15 +100,22 @@
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
   ;; by running 'blkid' in a terminal.
-  (file-systems (cons* (file-system
-                         (mount-point "/boot/efi")
-                         (device (uuid "5138-D0A1"
-                                       'fat32))
-                         (type "vfat"))
-                       (file-system
-                         (mount-point "/")
-                         (device (uuid
+  (file-systems (cons*  (file-system
+                          (mount-point "/boot/efi")
+                          (device (uuid "5138-D0A1"
+                                         'fat32))
+                          (type "vfat"))
+                        (file-system
+                          (mount-point "/")
+                          (device (uuid
                                   "c408af8b-12ca-491f-a8c0-803ce895801a"
                                   'ext4))
-                         (type "ext4")) %base-file-systems)))
+                          (type "ext4"))
+                        (file-system
+                          (mount-point "/data")
+                          (device (uuid
+                                   "b73c5895-57cd-4e90-9d4b-815290a6bb7f"
+                                   'ext4))
+                          (type "ext4")) 
+                        %base-file-systems)))
 
